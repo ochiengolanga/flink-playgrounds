@@ -41,8 +41,69 @@ You can check if the playground was successfully started, if you can access the 
 To stop the playground, run the following command
 
 ```bash
-docker-compose down
+docker-compose down -v
 ```
+
+## Logs
+
+### JobManager
+
+The JobManager logs can be tailed via docker-compose.
+
+```bash
+docker-compose logs -f jobmanager
+```
+
+After the initial startup you should mainly see log messages for every checkpoint completion.
+
+### TaskManager
+
+The TaskManager log can be tailed in the same way.
+
+```bash
+docker-compose logs -f taskmanager
+```
+
+After the initial startup you should mainly see log messages for every checkpoint completion.
+
+## Flink CLI
+
+The Flink CLI can be used from within the client container. For example, to print the help message of the Flink CLI you can run
+
+```bash
+docker-compose run --no-deps client flink --help
+```
+
+## Flink REST API
+
+The Flink REST API is exposed via localhost:8081 on the host or via jobmanager:8081 from the client container, e.g. to list all currently running jobs, you can run:
+
+```bash
+curl localhost:8081/jobs
+```
+
+Note: If the curl command is not available on your machine, you can run it from the client container (similar to the Flink CLI):
+
+```bash
+docker-compose run --no-deps client curl jobmanager:8081/jobs 
+```
+
+## Kafka Topics
+
+You can look at the records that are written to the Kafka Topics by running
+
+//input topic (1000 records/s)
+
+```basj
+docker-compose exec kafka kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 --topic input
+```
+
+//output topic (24 records/min)
+```bash
+docker-compose exec kafka kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 --topic output
+```  
 
 ## Further instructions
 
